@@ -64,10 +64,11 @@ impl DiscordRoles {
     #[payable]
     pub fn set_roles(&mut self, roles: Vec<Role>, timestamp: U64, sign: String) {
         let timestamp = u64::from(timestamp);
-        assert!(timestamp - env::block_timestamp() < 120_000_000_000, "signature expired");
+        assert!(env::block_timestamp() - timestamp < 120_000_000_000, "signature expired");
         let sign: Vec<u8> = bs58::decode(sign).into_vec().unwrap();
         let pk: Vec<u8> = bs58::decode(self.public_key.clone()).into_vec().unwrap();
-        verify((env::predecessor_account_id().to_string() + &timestamp.to_string()).into_bytes(), sign.into(), pk.into());
+        let json = json!(env::predecessor_account_id().to_string() + &timestamp.to_string()).to_string();
+        verify(json.into_bytes(), sign.into(), pk.into());
         
         let initial_storage_usage = env::storage_usage();
         for role in roles.iter() {
@@ -81,10 +82,11 @@ impl DiscordRoles {
 
     pub fn del_roles(&mut self, roles: Vec<Role>, timestamp: U64, sign: String) {
         let timestamp = u64::from(timestamp);
-        assert!(timestamp - env::block_timestamp() < 120_000_000_000, "signature expired");
+        assert!(env::block_timestamp() - timestamp < 120_000_000_000, "signature expired");
         let sign: Vec<u8> = bs58::decode(sign).into_vec().unwrap();
         let pk: Vec<u8> = bs58::decode(self.public_key.clone()).into_vec().unwrap();
-        verify((env::predecessor_account_id().to_string() + &timestamp.to_string()).into_bytes(), sign.into(), pk.into());
+        let json = json!(env::predecessor_account_id().to_string() + &timestamp.to_string()).to_string();
+        verify(json.into_bytes(), sign.into(), pk.into());
 
         for role in roles {
             let hash = get_hash(role.guild_id, role.role_id, role.fields, role.key_field);
