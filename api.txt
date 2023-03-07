@@ -1,4 +1,4 @@
-view方法：
+view：
 get_guild(guild_id: String) 
 return
 [{
@@ -26,7 +26,7 @@ return
     amount: String,
 }
 
-call方法：
+call：
 Role {
     guild_id: String,
     role_id: String,
